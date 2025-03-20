@@ -7,21 +7,35 @@ import { Card, CardContent, CardHeader } from '@components/atoms/card';
 import { Button } from '@components/atoms/button';
 import { Input } from '@components/atoms/input';
 import { Label } from '@components/atoms/label';
-import { login } from '@/app/admin/actions';
 
 export function LoginForm() {
+  const [error, setError] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const form = new FormData();
-    form.append('username', username);
-    form.append('password', password);
 
-    login(form);
-    setUsername('');
-    setPassword('');
+    fetch('/admin/auth/signin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+      }),
+    })
+      .then((res) => res.json())
+      .then(({error}) => {
+        if (error) {
+          return setError(error);
+        }
+        window.location.href = '/admin';
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   return (
@@ -50,9 +64,11 @@ export function LoginForm() {
               required
             />
           </div>
+          {error && <p className="text-red-500">{error}</p>}
           <Button type="submit" className="w-full">
             Sign In
           </Button>
+
         </form>
       </CardContent>
     </Card>
