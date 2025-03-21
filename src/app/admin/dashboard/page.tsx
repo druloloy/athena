@@ -28,14 +28,23 @@ export default function Page() {
   const [totalPendingRequests, setTotalPendingRequests] = React.useState(0);
   const [totalApprovedRequests, setTotalApprovedRequests] = React.useState(0);
 
-  getAnnouncements().then((data) => setAnnouncements(data || []));
+  useEffect(() => {
+    getAnnouncements().then((data) => setAnnouncements(data || []));
+  }, []);
 
   function handleUpload(file: File) {
     uploadAnnouncement(file).then(({ error }) => {
       if (error) {
         console.error(error);
       }
-      getAnnouncements().then((data) => setAnnouncements(data || []));
+      setAnnouncements((prev) => [
+        ...prev,
+        {
+          name: file.name,
+          public_url:
+            'https://cryqteehsbqplnvtmyvf.supabase.co/storage/v1/object/public/athena/announcements/' + file.name,
+        },
+      ]);
     });
   }
 
