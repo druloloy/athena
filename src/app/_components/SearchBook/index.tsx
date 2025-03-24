@@ -15,11 +15,13 @@ export function SearchBook() {
   };
 
   return (
-    <div className="w-full">
-      <div className="flex flex-row items-center space-x-2">
-        <ComboBox setValue={setQueryType} />
-        <Input onChange={(e) => setQuery(e.target.value)} placeholder="What book are you looking for?" />
-        <Button className="btn btn-primary" onClick={search}>
+    <div className="w-full p-4">
+      <div className="w-full flex-row flex flex-wrap md:flex-nowrap items-center justify-between gap-2">
+        <div className="w-full flex-row flex items-center justify-between gap-2">
+          <ComboBox setValue={setQueryType} />
+          <Input className="text-sm md:text-base" onChange={(e) => setQuery(e.target.value)} placeholder="What book?" />
+        </div>
+        <Button className="w-full md:w-auto" variant="default" onClick={search}>
           Search
         </Button>
       </div>

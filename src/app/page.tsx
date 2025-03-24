@@ -10,6 +10,8 @@ import { createClient } from '@/lib/supabase/client';
 import { getAnnouncements } from './admin/dashboard/actions';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from './_components/atoms/carousel';
 import Image from 'next/image';
+import { Button } from './_components/atoms/button';
+import { redirect } from 'next/navigation';
 
 export default function Home() {
   const { books } = React.useContext(BooksContext);
@@ -18,24 +20,24 @@ export default function Home() {
   const [selectedBook, setSelectedBook] = React.useState<BookProps | null>();
   const [announcements, setAnnouncements] = React.useState<{ name: string; public_url: string }[]>([]);
 
-  const supabase = createClient();
   React.useEffect(() => {
+    const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       setIsLoggedIn(user !== null);
     });
-  }, [supabase.auth]);
+  }, []);
 
   React.useEffect(() => {
     getAnnouncements().then((data) => setAnnouncements(data || []));
   }, []);
 
   const filterRecentlyAdded = books.filter(
-    (book) => new Date(book!.created_at as Date) > new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
-  ); // filter books added 5 days ago
+    (book) => new Date(book!.created_at as Date) > new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  ); // filter books added 1 day ago
 
   return (
-    <main className="w-full flex flex-col justify-center px-32 py-8">
-      <h2 className="text-center mt-0">Announcements</h2>
+    <main className="w-full flex flex-col justify-center px-4 md:px-32 py-8 overflow-x-hidden">
+      <h2 className="text-center mt-0 text-2xl md:text-4xl">Announcements</h2>
       <div className="w-full py-4">
         <Carousel
           opts={{
@@ -67,16 +69,20 @@ export default function Home() {
       </div>
 
       <Separator />
-      <h2 className="text-center">Freshly Added Books</h2>
+      <div className="flex flex-row justify-center items-center md:justify-center gap-2 p-4">
+        <h2 className="text-center md:text-center text-2xl md:text-4xl m-0">Freshly Added Books</h2>
+        {/* <Button onClick={() => redirect('/books')} variant="outline">
+          See All
+        </Button> */}
+      </div>
       {filterRecentlyAdded.length > 0 ? (
         <ScrollArea className="w-full mx-auto">
           <Dialog open={openBorrowModal} onOpenChange={setOpenBorrowModal}>
-            <div className="flex w-max gap-4 p-4">
+            <div className="flex  md:w-max gap-4 p-4">
               {filterRecentlyAdded.map((book) => (
                 <Book
-                  {...book}
+                  item={book}
                   key={book.key}
-                  size="sm"
                   ctaText="Borrow this book"
                   ctaType="default"
                   ctaFunction={() => {

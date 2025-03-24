@@ -23,6 +23,8 @@ export function AdminSearchBook({
   const [query, setQuery] = React.useState('');
 
   const search = () => {
+    if (!query) return;
+
     if (searchFrom === 'openlibrary') {
       if (queryType === 'title') {
         searchBooksByTitle(query).then((results) => {
@@ -48,21 +50,21 @@ export function AdminSearchBook({
 
     if (searchFrom === 'db') {
       if (queryType === 'title') {
-        searchBooksByTitleFromDatabase(query).then(({ data, error }) => {
+        searchBooksByTitleFromDatabase(query).then(({ data }) => {
           if (!data || data.length === 0) return setResults([]);
           setResults(data);
         });
       }
 
       if (queryType === 'author') {
-        searchBooksByAuthorFromDatabase(query).then(({ data, error }) => {
+        searchBooksByAuthorFromDatabase(query).then(({ data }) => {
           if (!data || data.length === 0) return setResults([]);
           setResults(data);
         });
       }
 
       if (queryType === 'genre') {
-        searchBooksByGenreFromDatabase(query).then(({ data, error }) => {
+        searchBooksByGenreFromDatabase(query).then(({ data }) => {
           if (!data || data.length === 0) return setResults([]);
           setResults(data);
         });
@@ -71,11 +73,13 @@ export function AdminSearchBook({
   };
 
   return (
-    <div className="w-full">
-      <div className="flex flex-row items-center space-x-2">
-        <ComboBox setValue={setQueryType} />
-        <Input onChange={(e) => setQuery(e.target.value)} placeholder="Search for a book..." />
-        <Button className="btn btn-primary" onClick={search}>
+    <div className="w-full p-4">
+      <div className="w-full flex-row flex flex-wrap md:flex-nowrap items-center justify-between gap-2">
+        <div className="w-full flex-row flex items-center justify-between gap-2">
+          <ComboBox setValue={setQueryType} />
+          <Input className="text-sm md:text-base" onChange={(e) => setQuery(e.target.value)} placeholder="What book?" />
+        </div>
+        <Button className="w-full md:w-auto" variant="default" onClick={search}>
           Search
         </Button>
       </div>

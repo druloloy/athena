@@ -12,8 +12,8 @@ import {
   getApprovedBorrowedBooksCount,
   getBookCollectionCount,
   getUnapprovedBorrowedBooksCount,
-  removeAnnouncement,
   uploadAnnouncement,
+  removeAnnouncement,
 } from './actions';
 import React, { useEffect } from 'react';
 import Image from 'next/image';
@@ -34,8 +34,8 @@ export default function Page() {
 
   function handleUpload(file: File) {
     uploadAnnouncement(file).then(({ error }) => {
-      if (error) {
-        console.error(error);
+      if (error?.message) {
+        console.error(error.message);
       }
       setAnnouncements((prev) => [
         ...prev,
@@ -76,7 +76,7 @@ export default function Page() {
   }, []);
 
   return (
-    <main className="w-full grid grid-cols-2 gap-4">
+    <main className="w-full p-4 grid gris-cols-1 md:grid-cols-2 gap-4">
       <div className="w-full">
         <h1 className="text-4xl font-bold m-0">Welcome to the Admin Dashboard</h1>
         <p>Here you can manage your announcements and other features.</p>
@@ -114,7 +114,9 @@ export default function Page() {
       <div className="border rounded-md p-4">
         <div className="flex flex-row items-center justify-between">
           <h3>Announcements</h3>
-          <Button onClick={() => setShowFileUpload(true)}>Upload</Button>
+          <Button variant="outline" onClick={() => setShowFileUpload(true)}>
+            Upload
+          </Button>
         </div>
         {showFileUpload && <FileUpload handleUpload={handleUpload} setShowFileUpload={setShowFileUpload} />}
         {!showFileUpload && announcements.length > 0 && (

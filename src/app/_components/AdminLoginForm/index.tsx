@@ -27,7 +27,7 @@ export function LoginForm() {
       }),
     })
       .then((res) => res.json())
-      .then(({error}) => {
+      .then(({ error }) => {
         if (error) {
           return setError(error);
         }
@@ -39,7 +39,7 @@ export function LoginForm() {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-lg">
+    <Card className="w-full h-screen flex flex-col justify-center items-center md:h-auto max-w-md mx-auto shadow-lg">
       <CardHeader className="space-y-4 text-center">
         <div className="flex justify-center">
           <span className="text-3xl font-bold tracking-tight uppercase">500 Books of Summer</span>
@@ -48,7 +48,7 @@ export function LoginForm() {
           <h2 className="text-2xl font-bold tracking-tight">Sign In</h2>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="w-full">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
@@ -68,7 +68,6 @@ export function LoginForm() {
           <Button type="submit" className="w-full">
             Sign In
           </Button>
-
         </form>
       </CardContent>
     </Card>

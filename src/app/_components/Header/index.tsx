@@ -39,7 +39,7 @@ export default async function Header() {
     <div className="w-full mx-auto">
       <Link href="/">
         <div className="w-full flex flex-col items-center space-x-2 space-y-2">
-          <h1 className="uppercase">500 Books of Summer</h1>
+          <h1 className="uppercase text-center word-break">500 Books of Summer</h1>
           <p>Quench your Thirst for Knowledge</p>
         </div>
       </Link>
@@ -82,7 +82,7 @@ export default async function Header() {
         </NavigationMenuList>
       </NavigationMenu>
 
-      <div className="w-1/2 py-4 mx-auto">
+      <div className="w-full md:w-1/2 py-4 md:mx-auto">
         <SearchBook />
       </div>
       <Separator />

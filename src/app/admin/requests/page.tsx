@@ -1,20 +1,20 @@
 'use client';
 
-import { Button } from '@/app/_components/atoms/button';
 import React from 'react';
 import { acceptRequest, markAsUnapproved, removeFromCollection } from './actions';
-import { createClient } from '@/lib/supabase/client';
 import BooksContext from '@/app/_providers/BooksProvider/context';
 import { BorrowedBook, BorrowedBookProps } from '@/app/_components/BorrowedBook';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/_components/atoms/tabs';
-import { LucideRotateCw } from 'lucide-react';
+import Collection from '@/app/_components/Collection';
 
 function UnapprovedRequests({
   collection,
   setCollection,
+  refresh,
 }: {
   collection: BorrowedBookProps[];
   setCollection: React.Dispatch<React.SetStateAction<BorrowedBookProps[]>>;
+  refresh: () => void;
 }) {
   const approve = (id: string) => {
     acceptRequest(id).then(() => {
@@ -29,40 +29,25 @@ function UnapprovedRequests({
   };
 
   return (
-    <div className="">
-      <div className="py-8 gap-4 flex flex-wrap">
-        {collection &&
-          collection.map((book) => (
-            <BorrowedBook
-              key={book.id}
-              {...book}
-              size="md"
-              ctaText="Approve Request"
-              ctaType="default"
-              ctaFunction={() => approve(book!.id as string)}
-              ctaFunction2={() => decline(book!.id as string)}
-              ctaText2="Decline Request"
-              ctaType2="ghost"
-            />
-          ))}
-
-        {!collection ||
-          (collection.length === 0 && (
-            <div className="w-full h-full flex justify-center items-center">
-              <h2 className="text-center text-2xl">No unapproved books yet.</h2>
-            </div>
-          ))}
-      </div>
-    </div>
+    <Collection
+      dataset={collection}
+      ItemComponent={UnapprovedBorrowedBookWrapper}
+      onCTAClick={(book) => approve(book!.id as string)}
+      onCTAClick2={(book) => decline(book!.id as string)}
+      onRefresh={refresh}
+      includeRefresh
+    />
   );
 }
 
 function ApprovedRequests({
   collection,
   setCollection,
+  refresh,
 }: {
   collection: BorrowedBookProps[];
   setCollection: React.Dispatch<React.SetStateAction<BorrowedBookProps[]>>;
+  refresh: () => void;
 }) {
   const unapprove = (id: string) => {
     markAsUnapproved(id).then(() => {
@@ -77,85 +62,93 @@ function ApprovedRequests({
   };
 
   return (
-    <div className="">
-      <div className="py-8 gap-4 flex flex-wrap">
-        {collection &&
-          collection.map((book) => (
-            <BorrowedBook
-              key={book.id}
-              {...book}
-              size="md"
-              ctaText="Mark as returned"
-              ctaType="destructive"
-              ctaFunction={() => returned(book!.id as string)}
-              ctaFunction2={() => unapprove(book!.id as string)}
-              ctaText2="Unapprove Request"
-              ctaType2="ghost"
-            />
-          ))}
-
-        {!collection ||
-          (collection.length === 0 && (
-            <div className="w-full h-full flex justify-center items-center">
-              <h2 className="text-center text-2xl">No approved books yet.</h2>
-            </div>
-          ))}
-      </div>
-    </div>
+    <Collection
+      dataset={collection}
+      ItemComponent={ApprovedBorrowedBookWrapper}
+      onCTAClick={(book) => returned(book!.id as string)}
+      onCTAClick2={(book) => unapprove(book!.id as string)}
+      onRefresh={refresh}
+      includeRefresh
+    />
   );
 }
 
 export default function Page() {
-  const supabase = createClient();
-  const { borrowedBooks } = React.useContext(BooksContext);
-  const [refreshingCollection, setRefreshingCollection] = React.useState(false);
+  const { borrowedBooks, fetchBorrowedBooks } = React.useContext(BooksContext);
   const [unapprovedBooks, setUnapprovedBooks] = React.useState<BorrowedBookProps[]>([]);
   const [approvedBooks, setApprovedBooks] = React.useState<BorrowedBookProps[]>([]);
-
-  const refreshCollection = React.useCallback(() => {
-    setRefreshingCollection(true);
-    setTimeout(() => {
-      supabase
-        .from('borrowed_books')
-        .select('*,books(*),users(*)')
-        .order('created_at', { ascending: false })
-        .then(({ error, data }) => {
-          setUnapprovedBooks(data?.filter((book) => !book.approved) as BorrowedBookProps[]);
-          setApprovedBooks(data?.filter((book) => book.approved) as BorrowedBookProps[]);
-        });
-      setRefreshingCollection(false);
-    }, 2000);
-  }, []);
 
   React.useEffect(() => {
     setUnapprovedBooks(borrowedBooks.filter((book) => !book.approved));
     setApprovedBooks(borrowedBooks.filter((book) => book.approved));
   }, [borrowedBooks]);
 
-  return (
-    <Tabs className="w-full flex justify-center" defaultValue="unapproved">
-      <TabsList className="grid grid-cols-2">
-        <TabsTrigger value="unapproved">Unapproved Requests</TabsTrigger>
-        <TabsTrigger value="approved">Approved Requests</TabsTrigger>
-      </TabsList>
+  const refresh = () => {
+    fetchBorrowedBooks();
+  };
 
+  return (
+    <main className="w-full flex flex-col justify-center">
       <div className="flex flex-row items-center space-x-2">
         <h2>Borrowed Books</h2>
-        {/* <AddBookModal /> */}
       </div>
+      <Tabs className="w-full flex justify-center" defaultValue="unapproved">
+        <TabsList className="grid grid-cols-2">
+          <TabsTrigger value="unapproved">Unapproved Requests</TabsTrigger>
+          <TabsTrigger value="approved">Approved Requests</TabsTrigger>
+        </TabsList>
 
-      <div className="">
-        <Button onClick={refreshCollection} variant="ghost" className="mt-4">
-          <LucideRotateCw /> {refreshingCollection ? 'Refreshing...' : 'Refresh Collection'}
-        </Button>
-      </div>
-
-      <TabsContent value="unapproved">
-        <UnapprovedRequests collection={unapprovedBooks} setCollection={setUnapprovedBooks} />
-      </TabsContent>
-      <TabsContent value="approved">
-        <ApprovedRequests collection={approvedBooks} setCollection={setApprovedBooks} />
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="unapproved">
+          <UnapprovedRequests collection={unapprovedBooks} setCollection={setUnapprovedBooks} refresh={refresh} />
+        </TabsContent>
+        <TabsContent value="approved">
+          <ApprovedRequests collection={approvedBooks} setCollection={setApprovedBooks} refresh={refresh} />
+        </TabsContent>
+      </Tabs>
+    </main>
   );
 }
+
+const UnapprovedBorrowedBookWrapper = ({
+  item,
+  ctaFunction,
+  ctaFunction2,
+}: {
+  item: BorrowedBookProps;
+  ctaFunction: () => void;
+  ctaFunction2: () => void;
+}) => {
+  return (
+    <BorrowedBook
+      item={item}
+      ctaText="Approve Request"
+      ctaType="default"
+      ctaFunction={ctaFunction}
+      ctaFunction2={ctaFunction2}
+      ctaText2="Decline Request"
+      ctaType2="ghost"
+    />
+  );
+};
+
+const ApprovedBorrowedBookWrapper = ({
+  item,
+  ctaFunction,
+  ctaFunction2,
+}: {
+  item: BorrowedBookProps;
+  ctaFunction: () => void;
+  ctaFunction2: () => void;
+}) => {
+  return (
+    <BorrowedBook
+      item={item}
+      ctaText="Mark as returned"
+      ctaType="destructive"
+      ctaFunction={ctaFunction}
+      ctaFunction2={ctaFunction2}
+      ctaText2="Unapprove Request"
+      ctaType2="ghost"
+    />
+  );
+};

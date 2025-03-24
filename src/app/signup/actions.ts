@@ -19,7 +19,7 @@ export async function signup(formData: FormData) {
     return { error: 'Password must be at least 6 characters long' };
   }
 
-  const { data: queryResult, error: queryError } = await supabase
+  const { error: queryError } = await supabase
     .from('users')
     .insert({
       username: data.username,

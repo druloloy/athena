@@ -4,7 +4,6 @@ import {
   searchBooksByTitleFromDatabase,
 } from '@/database/actions';
 import { BookProps } from '../_components/Book';
-import { redirect } from 'next/navigation';
 import SearchResults from './result';
 import { createClient } from '@/lib/supabase/server';
 
@@ -13,21 +12,21 @@ const search = async (query: string, query_type: string) => {
   if (!query) return [];
 
   if (query_type === 'title') {
-    return searchBooksByTitleFromDatabase(query).then(({ data, error }) => {
+    return searchBooksByTitleFromDatabase(query).then(({ data }) => {
       if (!data || data.length === 0) return [];
       return data;
     });
   }
 
   if (query_type === 'author') {
-    return searchBooksByAuthorFromDatabase(query).then(({ data, error }) => {
+    return searchBooksByAuthorFromDatabase(query).then(({ data }) => {
       if (!data || data.length === 0) return [];
       return data;
     });
   }
 
   if (query_type === 'genre') {
-    return searchBooksByGenreFromDatabase(query).then(({ data, error }) => {
+    return searchBooksByGenreFromDatabase(query).then(({ data }) => {
       if (!data || data.length === 0) return [];
       return data;
     });
@@ -35,12 +34,6 @@ const search = async (query: string, query_type: string) => {
 
   return [];
 };
-
-async function borrowBook() {
-  'use server';
-
-  redirect('/student/borrow');
-}
 
 export default async function Page({
   searchParams,
@@ -63,7 +56,7 @@ export default async function Page({
 
   return (
     results && (
-      <main className="w-full flex flex-col justify-center px-32 py-8">
+      <main className="w-full">
         <h2 className="text-center">
           Found {results.length} books for {query_type}: &quot;{query}&quot;.
         </h2>

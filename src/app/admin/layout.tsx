@@ -1,4 +1,3 @@
-import { Gutter } from '@/app/_components/atoms/gutter';
 import { createClient } from '@/lib/supabase/server';
 import { LoginForm } from '@components/AdminLoginForm';
 import { SideNavigation } from '../_components/SidebarNav';
@@ -6,7 +5,6 @@ import { Toaster } from '../_components/atoms/toaster';
 import { BooksProvider } from '../_providers/BooksProvider';
 import { ThemeBox } from '../_components/ThemeBox';
 import { redirect } from 'next/navigation';
-import { PostgrestError } from '@supabase/supabase-js';
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -16,14 +14,18 @@ export default async function Layout({ children }: { children: React.ReactNode }
   if (error || !data?.user) {
     return (
       <main className="w-full h-screen flex justify-center items-center">
-        <Gutter className="w-full">
-          <LoginForm />
-        </Gutter>
+        <LoginForm />
       </main>
     );
   }
 
-  const {data: { role }, error: roleError}: any = await supabase.from('users').select('role').eq('auth_id', data.user.id).single()
+  const { data: roleData, error: roleError } = await supabase
+    .from('users')
+    .select('role')
+    .eq('auth_id', data.user.id)
+    .single();
+
+  const role = roleData?.role;
 
   if (role !== 'admin' || roleError) {
     redirect('/');

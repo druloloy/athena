@@ -3,6 +3,7 @@ import React from 'react';
 import { cancelBorrow, getUserBorrowedBooks } from './actions';
 import { BorrowedBook, BorrowedBookProps } from '@/app/_components/BorrowedBook';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/_components/atoms/tabs';
+import Collection from '@/app/_components/Collection';
 
 export default function Page() {
   const [pendingBooks, setPendingBooks] = React.useState<BorrowedBookProps[]>([]);
@@ -15,9 +16,9 @@ export default function Page() {
     });
   }, []);
 
-  const cancel = (id: string) => {
-    cancelBorrow(id).then(() => {
-      setPendingBooks((prev) => prev.filter((book) => book.id !== id));
+  const cancel = (book: BorrowedBookProps) => {
+    cancelBorrow(book.id).then(() => {
+      setPendingBooks((prev) => prev.filter((b) => b.id !== book.id));
     });
   };
 
@@ -32,27 +33,21 @@ export default function Page() {
         </TabsList>
 
         <TabsContent value="unapproved">
-          <div className="gap-4 flex flex-wrap">
-            {pendingBooks &&
-              pendingBooks.map((book) => (
-                <BorrowedBook
-                  {...book}
-                  key={book!.id || ''}
-                  size="md"
-                  ctaText="Cancel Request"
-                  ctaType="destructive"
-                  ctaFunction={() => cancel(book.id!)}
-                />
-              ))}
-          </div>
+          <Collection dataset={pendingBooks} ItemComponent={PendingBooksWrapper} onCTAClick={cancel} />
         </TabsContent>
 
         <TabsContent value="approved">
-          <div className="gap-4 flex flex-wrap">
-            {approvedBooks && approvedBooks.map((book) => <BorrowedBook {...book} key={book!.id || ''} size="md" />)}
-          </div>
+          <Collection dataset={approvedBooks} ItemComponent={ApprovedBooksWrapper} />
         </TabsContent>
       </Tabs>
     </main>
   );
 }
+
+const PendingBooksWrapper = ({ ctaFunction, item }: { ctaFunction: () => void; item: BorrowedBookProps }) => {
+  return <BorrowedBook item={item} ctaText="Cancel Request" ctaType="destructive" ctaFunction={ctaFunction} />;
+};
+
+const ApprovedBooksWrapper = ({ ctaFunction, item }: { ctaFunction: () => void; item: BorrowedBookProps }) => {
+  return <BorrowedBook item={item} />;
+};

@@ -11,6 +11,10 @@ export interface BooksContextValue {
   setBookVersion: (version: number) => void;
   borrowedBookVersion: number;
   setBorrowedBookVersion: (version: number) => void;
+  fetchBooks: () => void;
+  fetchBorrowedBooks: () => void;
+  isLoading: boolean;
+  setIsLoading: (isLoading: boolean) => void;
 }
 
 const BooksContext = createContext<BooksContextValue>({} as BooksContextValue);

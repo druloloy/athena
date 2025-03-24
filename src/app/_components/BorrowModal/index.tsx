@@ -35,7 +35,7 @@ export function BorrowModal({
       }),
     })
       .then((res) => res.json())
-      .then(({ data, error }) => {
+      .then(({ error }) => {
         if (error) {
           return toast({
             title: 'Error',

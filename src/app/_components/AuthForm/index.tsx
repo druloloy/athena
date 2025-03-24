@@ -16,7 +16,7 @@ interface AuthFormProps {
 
 export default function AuthForm({ title, description, children, submitText, onSubmit, footer }: AuthFormProps) {
   return (
-    <Card className="w-full max-w-md shadow-lg">
+    <Card className="w-full h-full md:h-auto max-w-md shadow-lg flex flex-col justify-center">
       <form onSubmit={onSubmit}>
         <CardHeader>
           <CardTitle className="text-2xl font-semibold uppercase text-center">{title}</CardTitle>

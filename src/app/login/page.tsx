@@ -36,7 +36,7 @@ export default function Page() {
       }),
     })
       .then((res) => res.json())
-      .then(({ data, error }) => {
+      .then(({ error }) => {
         if (error) {
           return setError(error);
         }
@@ -52,7 +52,7 @@ export default function Page() {
   };
 
   return (
-    <main className="w-full flex flex-col items-center justify-center">
+    <main className="w-full flex flex-col items-center justify-center h-screen">
       <AuthForm
         title="Login"
         description="Login to your account"
@@ -69,6 +69,7 @@ export default function Page() {
             <p className="text-center text-sm">
               Go to{' '}
               <Button
+                type="button"
                 variant="link"
                 onClick={() => (window.location.href = '/')}
                 className="font-bold hover:underline px-0"
@@ -79,7 +80,7 @@ export default function Page() {
           </>
         }
       >
-        <div className="space-y-2">
+        <div className="space-y-2 w-full">
           <Label htmlFor="username">Student ID</Label>
           <Input
             id="username"
@@ -91,7 +92,7 @@ export default function Page() {
             required
           />
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 w-full">
           <Label htmlFor="password">Password</Label>
           <Input
             id="password"

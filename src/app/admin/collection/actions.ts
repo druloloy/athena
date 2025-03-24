@@ -1,6 +1,9 @@
-import { createClient } from '@/lib/supabase/client';
+'use server';
+import { createClient } from '@/lib/supabase/server';
+import { secure } from '@/lib/supabase/secure';
 
 export async function removeFromCollection(id: string) {
-  const supabase = createClient();
+  secure();
+  const supabase = await createClient();
   return await supabase.from('books').delete().eq('id', id);
 }

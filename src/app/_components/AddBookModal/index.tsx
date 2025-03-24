@@ -3,15 +3,15 @@ import { AdminSearchBook } from '../AdminSearchBook';
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../atoms/dialog';
 import { ScrollArea, ScrollBar } from '../atoms/scroll-area';
 import { Book, BookProps } from '../Book';
-import { OpenLibraryDocument } from '@/lib/openlib/search';
 import { addToCollection } from './action';
 import { toast } from '@/app/_hooks/use-toast';
 import BooksContext from '@/app/_providers/BooksProvider/context';
+import Collection from '../Collection';
 
 export function AddBookModal({ setCollection }: { setCollection: React.Dispatch<React.SetStateAction<BookProps[]>> }) {
   const { books } = React.useContext(BooksContext);
 
-  const [_results, _setResults] = React.useState<OpenLibraryDocument[]>();
+  const [_results, _setResults] = React.useState<BookProps[]>([]);
 
   function setResults(results: BookProps[]) {
     // filter out books that are already in the collection
@@ -20,7 +20,7 @@ export function AddBookModal({ setCollection }: { setCollection: React.Dispatch<
   }
 
   function addbook(book: BookProps) {
-    addToCollection(book).then((res) => {
+    addToCollection(book).then(() => {
       toast({
         title: 'Success',
         description: book.title + ' is added to collection',
@@ -31,7 +31,7 @@ export function AddBookModal({ setCollection }: { setCollection: React.Dispatch<
   }
 
   return (
-    <DialogContent className="h-2/3">
+    <DialogContent className="h-screen md:h-2/3">
       <DialogHeader>
         <DialogTitle>Add Books</DialogTitle>
         <DialogDescription>Search and select a book to add.</DialogDescription>
@@ -43,24 +43,18 @@ export function AddBookModal({ setCollection }: { setCollection: React.Dispatch<
         </div>
       )}
       <ScrollArea className="p-4 overflow-y-auto">
-        {_results && _results.length > 0
-          ? _results.map((book) => (
-              <Book
-                key={book.key}
-                size="sm"
-                title={book.title}
-                author_name={book.author_name}
-                subject={book.subject}
-                cover_edition_key={book.cover_edition_key}
-                ctaType="default"
-                ctaText="Add to Collection"
-                ctaFunction={() => addbook(book)}
-              />
-            ))
-          : null}
-
+        <Collection
+          dataset={_results}
+          ItemComponent={BookWrapper}
+          onCTAClick={(item) => addbook(item)}
+          showEmptyMessage={false}
+        />
         <ScrollBar orientation="vertical" />
       </ScrollArea>
     </DialogContent>
   );
 }
+
+const BookWrapper = ({ item, ctaFunction }: { item: BookProps; ctaFunction: () => void }) => {
+  return <Book item={item} ctaFunction={ctaFunction} ctaText="Add Book" ctaType="default" />;
+};

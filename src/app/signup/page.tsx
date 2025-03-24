@@ -55,7 +55,7 @@ export default function Page() {
       body: JSON.stringify(signupData),
     })
       .then((res) => res.json())
-      .then(({ data, error }) => {
+      .then(({ error }) => {
         if (error) {
           return setError(error);
         }
@@ -67,7 +67,7 @@ export default function Page() {
   };
 
   return (
-    <main className="w-full h-full flex justify-center">
+    <main className="w-full flex flex-col items-center justify-center h-screen">
       <AuthForm
         title="Sign Up"
         description="Create a new account to get started"
@@ -84,6 +84,7 @@ export default function Page() {
             <p className="text-center text-sm">
               Go to{' '}
               <Button
+                type="button"
                 variant="link"
                 onClick={() => (window.location.href = '/')}
                 className="font-bold hover:underline px-0"

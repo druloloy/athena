@@ -6,9 +6,6 @@ import { createClient } from '@/lib/supabase/server';
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
-
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
   const data = {
     username: formData.get('username') as string,
     email: '',

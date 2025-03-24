@@ -1,4 +1,3 @@
-import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 import { chain } from './middlewares/chain';
 import { appendPathname } from './middlewares/appendPathname';

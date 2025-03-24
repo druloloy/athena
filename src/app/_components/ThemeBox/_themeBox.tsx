@@ -5,7 +5,7 @@ import { Button } from '@/app/_components/atoms/button';
 import { cn } from '@/lib/utils';
 import { Moon, Sun, SunDim } from 'lucide-react';
 
-export const _ThemeBox = () => {
+export const ThemeBox = () => {
   const { theme, toggleTheme } = useTheme();
   return (
     <Button
