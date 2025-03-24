@@ -23,7 +23,7 @@ export default function Page() {
   };
 
   return (
-    <main className="w-full flex flex-col justify-center px-32 py-8">
+    <main className="w-full flex flex-col justify-center px-4 md:px-32 py-8 overflow-x-hidden">
       <h1>Your Borrowed Books</h1>
 
       <Tabs className="w-full flex justify-center" defaultValue="unapproved">
